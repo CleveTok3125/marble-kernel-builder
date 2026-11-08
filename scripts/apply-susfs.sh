@@ -11,6 +11,7 @@ fi
 
 source config/marble.env
 source release/resolved-refs.env
+source scripts/lib/susfs-kconfig.sh
 
 if [[ -z "${susfs_commit}" || -z "${susfs_kernel_branch}" ]]; then
   echo "::error::SUSFS resolution missing commit or kernel branch"
@@ -58,6 +59,8 @@ if ! grep -q '^config KSU_SUSFS$' "${manager_kconfig}"; then
   echo "::error::Official manager ref ${manager_repo}@${manager_ref} does not include manager-side SUSFS support"
   exit 1
 fi
+
+ensure_susfs_priority_uid_filter "${manager_kconfig}" "$(dirname "${manager_kconfig}")"
 
 echo "Using manager-side SUSFS support from ${manager_repo}@${manager_ref}"
 
